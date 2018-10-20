@@ -11,8 +11,15 @@
 
 import sensor, image, time, math, omv
 
+#adding UART capability
+import pyb, ustruct
+uart = pyb.UART(3, 113200, timeout_char = 50) #clocks are off => slow down a smidgen
+
+#say hello
+uart.write("hej, verden!!\n")
+
 # Set the thresholds to find a white object (i.e. tag border)
-thresholds = (160, 255)
+thresholds = (80, 255)
 
 sensor.reset()
 sensor.set_pixformat(sensor.GRAYSCALE)
@@ -46,6 +53,12 @@ while(True):
 
 #    print("snapshot")
 
+###########
+# TODO:
+# make thresholds correspond to size of actual tags
+# check on merging or not
+#############
+
     for blob in img.find_blobs([thresholds], pixels_threshold=1000, area_threshold=100, merge=False):
         # Next we look for a tag in an ROI that's bigger than the blob.
         w = min(max(int(blob.w() * 1.2), 10), 160) # Not too small, not too big.
@@ -54,9 +67,6 @@ while(True):
         y = min(max(int(blob.y() + (blob.h()/4) - (h * 0.1)), 0), img.height()-1)
 
         box_list.append((x, y, w, h)) # We'll draw these later.
-#        print(w)
-#        print("x")
-#        print(h)
 
         # Since we constrict the roi size apriltags shouldn't run out of ram.
         # But, if it does we handle it...
@@ -75,3 +85,5 @@ while(True):
         for c in tag.corners():
             img.draw_circle(c[0], c[1], 5)
         print("Tag:", tag.cx(), tag.cy(), tag.rotation(), tag.id())
+        #uart.write(str(tag.id()))
+        uart.write(ustruct.pack("<bbbhhb", 255, 0, tag.id(), tag.cx(), tag.cy(), 170))
