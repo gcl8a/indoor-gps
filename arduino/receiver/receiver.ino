@@ -142,24 +142,3 @@ void loop()
   }
 }
 
-uint16_t RussianPeasantMethod(uint32_t mantissa, uint16_t exponent, uint16_t modulus)
-//computes mantissa^exponent % modulus using RPM
-{
-  uint32_t result = 1;
-  while(exponent != 0)
-  {
-    if(exponent % 2) //odd
-    {
-      result *= mantissa;
-      result %= modulus;
-    }
-    
-    mantissa *= mantissa;
-    mantissa %= modulus;
-
-    exponent /= 2; //remainder dropped if odd
-  }
-
-  return result;
-}
-
