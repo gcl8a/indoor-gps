@@ -43,9 +43,9 @@ void SendCoordinates(int target, Tag tag)
   Serial.print('\t');
   Serial.print(tag.id);
   Serial.print('\t');
-  Serial.print(tag.location[0]);
+  Serial.print(tag.x_loc);
   Serial.print('\t');
-  Serial.print(tag.location[1]);
+  Serial.print(tag.y_loc);
   Serial.print('\n');
 
   if (USEACK)

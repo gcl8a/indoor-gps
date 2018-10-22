@@ -12,7 +12,7 @@ Timer pingTimer;
 void setup() 
 {
   Serial.begin(115200);
-  while(!Serial) {}
+  //while(!Serial) {}
   Serial.println("setup()");
 
   Serial1.begin(115200);
@@ -50,8 +50,8 @@ void loop()
   {
     Tag tag;
     tag.id = 99;
-    tag.location[0] = 99;
-    tag.location[1] = 99;
+    tag.x_loc = 99;
+    tag.y_loc = 99;
     SendCoordinates(1, tag);
     pingTimer.Restart();  
   }
