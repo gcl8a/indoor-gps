@@ -1,4 +1,7 @@
 #define Serial SerialUSB
+
+#include "tag.h"
+
 #include <RFM69.h>
 // Addresses for this node. CHANGE THESE FOR EACH NODE!
 #define NETWORKID     155   // Must be the same for all nodes (0 to 255)
@@ -126,6 +129,15 @@ void loop()
 
       recBuffer[i] = radio.DATA[i];
     }
+
+    Tag tag;
+    memcpy(&tag, recBuffer, 5);
+    Serial.print(tag.id);
+    Serial.print('\t');
+    Serial.print(tag.y_loc);
+    Serial.print('\t');
+    Serial.print(tag.x_loc);
+    Serial.print('\n');
 
     // RSSI is the "Receive Signal Strength Indicator",
     // smaller absolute values mean higher power.
