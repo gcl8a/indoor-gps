@@ -134,9 +134,9 @@ void loop()
     memcpy(&tag, recBuffer, 5);
     Serial.print(tag.id);
     Serial.print('\t');
-    Serial.print(tag.y_loc);
-    Serial.print('\t');
     Serial.print(tag.x_loc);
+    Serial.print('\t');
+    Serial.print(tag.y_loc);
     Serial.print('\n');
 
     // RSSI is the "Receive Signal Strength Indicator",
