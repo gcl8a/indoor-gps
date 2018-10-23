@@ -1,5 +1,3 @@
-#define Serial SerialUSB
-
 #include "tag.h"
 
 #include <RFM69.h>
