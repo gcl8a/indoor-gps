@@ -37,7 +37,7 @@ void SendCoordinates(int target, Tag tag)
 {
   uint8_t sendBuffer[62]; //62 is max length with AES
 
-  memcpy(sendBuffer, &tag, 5);
+  memcpy(sendBuffer, &tag, 6);
 
   Serial.print(target);
   Serial.print('\t');
@@ -50,7 +50,7 @@ void SendCoordinates(int target, Tag tag)
 
   if (USEACK)
   {
-    if (radio.sendWithRetry(target, sendBuffer, 5))
+    if (radio.sendWithRetry(target, sendBuffer, 10))
       Serial.println("ACK received!");
     else
       Serial.println("no ACK received :(");
@@ -58,7 +58,7 @@ void SendCoordinates(int target, Tag tag)
   
   else // don't use ACK
   {
-    radio.send(target, sendBuffer, 5);
+    radio.send(target, sendBuffer, 10);
   }
 }
       

@@ -1,3 +1,5 @@
+#define Serial SerialUSB
+
 #include "tag.h"
 
 #include <RFM69.h>
@@ -122,25 +124,27 @@ void loop()
 
     for (byte i = 0; i < radio.DATALEN; i++)
     {
-      Serial.print(',');
-      Serial.print(radio.DATA[i], DEC);
-
       recBuffer[i] = radio.DATA[i];
+
+      Serial.print(',');
+      Serial.print(recBuffer[i], DEC);
     }
+    Serial.println("] ");
 
     Tag tag;
-    memcpy(&tag, recBuffer, 5);
+    memcpy(&tag, recBuffer, 6);
+    
     Serial.print(tag.id);
     Serial.print('\t');
-    Serial.print(tag.x_loc);
+    Serial.print(tag.x_loc, DEC);
     Serial.print('\t');
-    Serial.print(tag.y_loc);
+    Serial.print(tag.y_loc, DEC);
     Serial.print('\n');
 
     // RSSI is the "Receive Signal Strength Indicator",
     // smaller absolute values mean higher power.
-    Serial.print("], RSSI ");
-    Serial.println(radio.RSSI);
+//    Serial.print("], RSSI ");
+//    Serial.println(radio.RSSI);
 
     // Send an ACK if requested.
     if (radio.ACKRequested())

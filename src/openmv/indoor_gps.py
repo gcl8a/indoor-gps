@@ -86,4 +86,4 @@ while(True):
             img.draw_circle(c[0], c[1], 5)
         print("Tag:", tag.cx(), tag.cy(), tag.rotation(), tag.id())
         #uart.write(str(tag.id()))
-        uart.write(ustruct.pack("<bbbhhb", 255, 0, tag.id(), tag.cx(), tag.cy(), 170))
+        uart.write(ustruct.pack("<bbhhhb", 255, 0, tag.id(), tag.cx(), tag.cy(), 170))

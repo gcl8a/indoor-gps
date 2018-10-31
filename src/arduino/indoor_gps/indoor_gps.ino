@@ -40,7 +40,7 @@ void loop()
     {
       Tag tag;
       Serial.print(mvArray[2]);
-      memcpy(&tag, &mvArray[2], 5);
+      memcpy(&tag, &mvArray[2], 6);
       Serial.println(tag.id);
       SendCoordinates(1, tag);
     }
@@ -69,7 +69,7 @@ bool HandleUART(uint8_t b)
       if(b == 0x00) mvIndex++;
       else mvIndex = 0; //didn't get the 00 byte, so restart
       break;
-    case 7:
+    case 8:
       if(b == 0xaa) //correct end byte, so process
       {
         retVal = true;
@@ -77,9 +77,9 @@ bool HandleUART(uint8_t b)
       } 
       else mvIndex = 0; //didn't get the aa byte, so restart
       break;
-    case 8:
+    case 9:
       Serial.println("Something is very wrong!");
-      while(1) {}
+      //while(1) {}
       break;
     default:
       mvArray[mvIndex++] = b;
