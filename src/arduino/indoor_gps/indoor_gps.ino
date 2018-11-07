@@ -24,10 +24,10 @@ void setup()
   Serial.println("setup() complete");
 }
 
-//packets consist of: FF 00 id xL xH yL yH AA
+//packets consist of: FF 00 idL idH xL xH yL yH AA
 //note that id can never be 00
 
-uint8_t mvArray[8]; //array for receiving data from the OpenMV cam
+uint8_t mvArray[9]; //array for receiving data from the OpenMV cam
 uint8_t mvIndex = 0; //for counting bytes
 
 void loop() 
@@ -38,21 +38,25 @@ void loop()
     Serial.println(b, HEX);
     if(HandleUART(b))
     {
-      Tag tag;
-      Serial.print(mvArray[2]);
-      memcpy(&tag, &mvArray[2], 6);
-      Serial.println(tag.id);
-      SendCoordinates(1, tag);
+      TagReading reading;
+      memcpy(&reading, &mvArray[2], 6);
+      uint32_t timeStamp = millis();
+      
+      if(timeStamp - lastSendTime[reading.id] > SEND_INTERVAL)
+      {  
+        lastSendTime[reading.id] = timeStamp;
+        SendCoordinates(reading);
+      }
     }
   }
   
   if(pingTimer.CheckExpired())
   {
-    Tag tag;
-    tag.id = 99;
-    tag.x_loc = 99;
-    tag.y_loc = 99;
-    SendCoordinates(1, tag);
+    TagReading reading;
+    reading.id = 99;
+    reading.x_loc = 99;
+    reading.y_loc = 99;
+    SendCoordinates(reading, 10); //send to node 10, which won't be a tag
     pingTimer.Restart();  
   }
 }

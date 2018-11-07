@@ -31,26 +31,25 @@ void Init()
     radio.encrypt(ENCRYPTKEY);
 }
 
-//String inputString; //for receiving Serial input
-
-void SendCoordinates(int target, Tag tag)
+void SendCoordinates(TagReading reading, uint8_t target = 0)
 {
+  if(!target) target = reading.id; //target defaults to the tag id
+  
   uint8_t sendBuffer[62]; //62 is max length with AES
+  memcpy(sendBuffer, &reading, 6);
 
-  memcpy(sendBuffer, &tag, 6);
-
-  Serial.print(target);
-  Serial.print('\t');
-  Serial.print(tag.id);
-  Serial.print('\t');
-  Serial.print(tag.x_loc);
-  Serial.print('\t');
-  Serial.print(tag.y_loc);
-  Serial.print('\n');
+//  Serial.print(target);
+//  Serial.print('\t');
+//  Serial.print(reading.id);
+//  Serial.print('\t');
+//  Serial.print(reading.x_loc);
+//  Serial.print('\t');
+//  Serial.print(reading.y_loc);
+//  Serial.print('\n');
 
   if (USEACK)
   {
-    if (radio.sendWithRetry(target, sendBuffer, 10))
+    if (radio.sendWithRetry(target, sendBuffer, sizeof(reading)))
       Serial.println("ACK received!");
     else
       Serial.println("no ACK received :(");
@@ -58,7 +57,7 @@ void SendCoordinates(int target, Tag tag)
   
   else // don't use ACK
   {
-    radio.send(target, sendBuffer, 10);
+    radio.send(target, sendBuffer, sizeof(reading));
   }
 }
       
