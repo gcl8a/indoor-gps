@@ -9,4 +9,6 @@ struct Tag
 //  uint16_t location[2];
 };
 
+uint32_t lastSendTime[12];
+
 #endif
