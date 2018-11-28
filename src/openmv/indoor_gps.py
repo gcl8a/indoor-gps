@@ -19,12 +19,12 @@ uart = pyb.UART(3, 113200, timeout_char = 50) #clocks are off => slow down a smi
 uart.write("hej, verden!!\n")
 
 # Set the thresholds to find a white object (i.e. tag border)
-thresholds = (80, 255)
+thresholds = (160, 255)
 
 sensor.reset()
 sensor.set_pixformat(sensor.GRAYSCALE)
 if omv.board_type() == "H7": sensor.set_framesize(sensor.VGA)
-elif omv.board_type() == "M7": sensor.set_framesize(sensor.QVGA)
+elif omv.board_type() == "M7": sensor.set_framesize(sensor.VGA)
 else: raise Exception("You need a more powerful OpenMV Cam to run this script")
 sensor.skip_frames(time = 100) # increase this to let the auto methods run for longer
 sensor.set_auto_gain(False) # must be turned off for color tracking
@@ -59,12 +59,14 @@ while(True):
 # check on merging or not
 #############
 
-    for blob in img.find_blobs([thresholds], pixels_threshold=1000, area_threshold=100, merge=False):
-        # Next we look for a tag in an ROI that's bigger than the blob.
-        w = min(max(int(blob.w() * 1.2), 10), 160) # Not too small, not too big.
-        h = min(max(int(blob.h() * 1.2), 10), 160) # Not too small, not too big.
-        x = min(max(int(blob.x() + (blob.w()/4) - (w * 0.1)), 0), img.width()-1)
-        y = min(max(int(blob.y() + (blob.h()/4) - (h * 0.1)), 0), img.height()-1)
+    for blob in img.find_blobs([thresholds], pixels_threshold=100, area_threshold=800, merge=False):
+        # Next we look for a tag in an ROI that corresponds to the blob.
+        # For VGA resolution, a typical tag will be ~40 pixels across, ~60 if angled to 45 deg
+        w = 64
+        h = 64
+
+        x = blob.x()
+        y = blob.y()
 
         box_list.append((x, y, w, h)) # We'll draw these later.
 

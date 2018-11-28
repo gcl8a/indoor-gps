@@ -35,15 +35,23 @@ void loop()
   if(Serial1.available())
   {
     uint8_t b = Serial1.read();
-    Serial.println(b, HEX);
+    //Serial.println(b, HEX);
     if(HandleUART(b))
     {
       TagReading reading;
       memcpy(&reading, &mvArray[2], 6);
       uint32_t timeStamp = millis();
+
+//      Serial.print(timeStamp);
+//      Serial.print(';');
+//      Serial.print(lastSendTime[reading.id]);
+//      Serial.print(';');
+//      Serial.print(timeStamp - lastSendTime[reading.id]);
+//      Serial.print('\n');
       
       if(timeStamp - lastSendTime[reading.id] > SEND_INTERVAL)
       {  
+//        Serial.print("Sending!");
         lastSendTime[reading.id] = timeStamp;
         SendCoordinates(reading);
       }
@@ -56,7 +64,7 @@ void loop()
     reading.id = 99;
     reading.x_loc = 99;
     reading.y_loc = 99;
-    SendCoordinates(reading, 10); //send to node 10, which won't be a tag
+    SendCoordinates(reading, 19); //send to node 19, which won't be a tag
     pingTimer.Restart();  
   }
 }
