@@ -1,7 +1,7 @@
 #ifndef __TAG_H
 #define __TAG_H
 
-const uint32_t SEND_INTERVAL = 500;
+const uint32_t SEND_INTERVAL = 400;
 
 struct TagReading
 {

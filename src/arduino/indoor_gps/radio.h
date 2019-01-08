@@ -15,13 +15,13 @@
 #define USEACK        false // Request ACKs or not
 
 // Create a library object for our RFM69HCW module:
-// RFM69(uint8_t slaveSelectPin=RF69_SPI_CS, uint8_t interruptPin=RF69_IRQ_PIN, bool isRFM69HW=false, uint8_t interruptNum=RF69_IRQ_NUM)
-RFM69 radio(10, 3, false, digitalPinToInterrupt(3));
+RFM69 radio(10, 3, false, digitalPinToInterrupt(3)); //10 & 3 on the pro micro (3.3V; ATmega32u4)
+
+int spoofFactor = 0;
 
 void Init()
 {    
   // Initialize the RFM69HCW:
-  radio.setCS(10);
   radio.initialize(FREQUENCY, MYNODEID, NETWORKID);
   radio.setHighPower(); // Always use this for RFM69HCW
 
@@ -32,7 +32,16 @@ void Init()
 
 void SendCoordinates(TagReading reading, uint8_t target = 0)
 {
+  Serial.print(millis());
+  Serial.print(": ");
+
   if(!target) target = reading.id; //target defaults to the tag id
+
+  //GPS spoofing
+  if(spoofFactor)
+  {
+    reading.y_loc += reading.x_loc * spoofFactor / 10.0;
+  }
   
   uint8_t sendBuffer[62]; //62 is max length with AES
   memcpy(sendBuffer, &reading, 6);
@@ -46,18 +55,39 @@ void SendCoordinates(TagReading reading, uint8_t target = 0)
   Serial.print(reading.y_loc);
   Serial.print('\n');
 
-  if (USEACK)
-  {
-    if (radio.sendWithRetry(target, sendBuffer, sizeof(reading)))
-      Serial.println("ACK received!");
-    else
-      Serial.println("no ACK received :(");
-  }
+//  if (USEACK)
+//  {
+//    if (radio.sendWithRetry(target, sendBuffer, sizeof(reading)))
+//      Serial.println("ACK received!");
+//    else
+//      Serial.println("no ACK received :(");
+//  }
   
-  else // don't use ACK
+//  else // don't use ACK
   {
     radio.send(target, sendBuffer, sizeof(reading));
   }
 }
-      
+
+int CheckRadio(void)
+{
+  if(radio.receiveDone())
+  {
+    for(int i = 0; i < radio.DATALEN; i++) 
+    {
+      Serial.print(radio.DATA[i], HEX);
+      Serial.print(',');
+    }
+    
+    if(radio.SENDERID == 10)
+    {
+      if(radio.DATALEN == 2) 
+      {
+        if(radio.DATA[0] == 0x55) spoofFactor = radio.DATA[1];
+      }
+    }
+  }
+
+  return spoofFactor;
+}
 
